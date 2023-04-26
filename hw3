@@ -1,0 +1,78 @@
+from enum import Enum
+
+class Currency(Enum):
+    USD = 1
+    RUB = 2
+    KZT = 3
+    EUR = 4
+
+class BankAccount:
+    def __init__(self, name, surname, account, initial_balance=0):
+        self.name = name
+        self.surname = surname
+        self.account = account
+        self.balance = {Currency.USD: 0, Currency.RUB: 0, Currency.KZT: 0, Currency.EUR: 0}
+        self.balance[self.account] = initial_balance
+
+    def __str__(self):
+        return f"BankAccount({self.name}, {self.surname}, {self.account}, balance: {self.balance})"
+
+    def get_balance(self, currency):
+        return self.balance[currency]
+
+    def set_balance(self, currency, amount):
+        self.balance[currency] = amount
+
+    def add(self, currency, amount):
+        self.balance[currency] += amount
+
+    def subtract(self, currency, amount):
+        self.balance[currency] -= amount
+
+    def convert_currency(self, amount, from_currency, to_currency, exchange_rate):
+        converted_amount = amount * exchange_rate
+        self.subtract(from_currency, amount)
+        self.add(to_currency, converted_amount)
+
+    def close_account(self):
+        self.name = None
+        self.surname = None
+        self.account = None
+        self.balance = None
+
+
+
+
+# create a new bank account
+account = BankAccount("John", "Doe", Currency.USD, initial_balance=1000)
+print(account) # BankAccount(John, Doe, Currency.USD, balance: {Currency.USD: 1000, Currency.RUB: 0, Currency.KZT: 0, Currency.EUR: 0})
+
+# add money to the account
+account.add(Currency.USD, 500)
+print(account.get_balance(Currency.USD)) # 1500
+
+# subtract money from the account
+account.subtract(Currency.USD, 200)
+print(account.get_balance(Currency.USD)) # 1300
+
+# convert money from USD to EUR
+exchange_rate = 0.82 # USD to EUR exchange rate
+account.convert_currency(500, Currency.USD, Currency.EUR, exchange_rate)
+print(account.get_balance(Currency.USD)) # 800
+print(account.get_balance(Currency.EUR)) # 410
+
+# close the account
+account.close_account()
+print(account) # BankAccount(None, None, None, balance: None)
+
+# create a new bank account for a user entered through the terminal
+name = input("Enter name: ")
+surname = input("Enter surname: ")
+account_type = input("Enter account type (USD, RUB, KZT, EUR): ")
+initial_balance = float(input("Enter initial balance: "))
+account = BankAccount(name, surname, Currency[account_type], initial_balance)
+
+# perform operations on the account
+account.add(Currency.USD, 500)
+account.convert_currency(1000, Currency.EUR, Currency.RUB, 88.52)
+print(account)
